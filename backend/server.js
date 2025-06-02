@@ -33,8 +33,14 @@ app.use("/api/", limiter)
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: [
+      'https://my-fit-journey.vercel.app',
+      'https://my-fit-journey-83c7i72qr-pablorocheras-projects.vercel.app',
+      process.env.FRONTEND_URL
+    ].filter(Boolean),
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    optionsSuccessStatus: 204
   })
 )
 
