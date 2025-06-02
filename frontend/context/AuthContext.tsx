@@ -56,13 +56,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = async (userData: any) => {
     try {
-      const response = await apiRegister(userData)
+      console.log("Datos antes de enviar a API:", userData);
+      // Asegurarse de que height y weight sean números
+      const processedData = {
+        ...userData,
+        height: Number(userData.height),
+        weight: Number(userData.weight)
+      };
+      console.log("Datos procesados para enviar:", processedData);
+      
+      const response = await apiRegister(processedData)
+      console.log("Respuesta del registro:", response);
       localStorage.setItem("token", response.token)
       setUser(response.user)
       return response
     } catch (error: any) {
-      console.error("Error en registro:", error)
-      if (error.status === 400 && error.message.includes("email already exists")) {
+      console.error("Error en registro (detallado):", error)
+      if (error.status === 400 && error.message && error.message.includes("email already exists")) {
         throw new Error("Este correo electrónico ya está registrado")
       }
       throw new Error(error.message || "Error al registrar usuario")
