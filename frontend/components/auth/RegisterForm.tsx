@@ -58,6 +58,17 @@ export default function RegisterForm() {
       return
     }
 
+    // Validar requisitos de la contraseña
+    const hasUpperCase = /[A-Z]/.test(formData.password)
+    const hasLowerCase = /[a-z]/.test(formData.password)
+    const hasNumber = /\d/.test(formData.password)
+
+    if (!hasUpperCase || !hasLowerCase || !hasNumber) {
+      setError("La contraseña debe contener al menos una letra mayúscula, una minúscula y un número")
+      setLoading(false)
+      return
+    }
+
     // Validar altura y peso
     const height = Number(formData.height)
     const weight = Number(formData.weight)
@@ -249,6 +260,9 @@ export default function RegisterForm() {
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
             </div>
+            <p className="text-sm text-gray-500 mt-1">
+              La contraseña debe tener al menos 6 caracteres, una letra mayúscula, una minúscula y un número
+            </p>
           </div>
 
           <div className="space-y-2">
