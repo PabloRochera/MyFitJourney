@@ -155,7 +155,9 @@ export default function RegisterForm() {
               <Input
                 id="height"
                 name="height"
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 placeholder="170"
                 value={formData.height}
                 onChange={handleChange}
@@ -167,7 +169,9 @@ export default function RegisterForm() {
               <Input
                 id="weight"
                 name="weight"
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 placeholder="70"
                 value={formData.weight}
                 onChange={handleChange}
@@ -178,7 +182,7 @@ export default function RegisterForm() {
 
           <div className="space-y-2">
             <Label>Objetivo</Label>
-            <Select onValueChange={(value) => handleSelectChange("goal", value)} required>
+            <Select onValueChange={(value) => handleSelectChange("goal", value)} defaultValue={formData.goal} required>
               <SelectTrigger>
                 <SelectValue placeholder="Selecciona tu objetivo" />
               </SelectTrigger>
@@ -193,7 +197,7 @@ export default function RegisterForm() {
 
           <div className="space-y-2">
             <Label>Nivel de actividad</Label>
-            <Select onValueChange={(value) => handleSelectChange("activityLevel", value)} required>
+            <Select onValueChange={(value) => handleSelectChange("activityLevel", value)} defaultValue={formData.activityLevel} required>
               <SelectTrigger>
                 <SelectValue placeholder="Selecciona tu nivel" />
               </SelectTrigger>
@@ -209,7 +213,7 @@ export default function RegisterForm() {
 
           <div className="space-y-2">
             <Label>Experiencia</Label>
-            <Select onValueChange={(value) => handleSelectChange("experience", value)} required>
+            <Select onValueChange={(value) => handleSelectChange("experience", value)} defaultValue={formData.experience} required>
               <SelectTrigger>
                 <SelectValue placeholder="Selecciona tu experiencia" />
               </SelectTrigger>
