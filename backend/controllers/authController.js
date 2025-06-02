@@ -6,54 +6,11 @@ const authController = {
   // Register new user
   register: async (req, res) => {
     try {
-      console.log("Payload completo recibido:", req.body);
-      
       const { name, email, password, height, weight, goal, activityLevel, experience } = req.body
-      
-      console.log("Datos de registro recibidos (tipos):", { 
-        name: typeof name, 
-        email: typeof email, 
-        password: typeof password,
-        passwordLength: password?.length, 
-        height: typeof height + " - valor: " + height, 
-        weight: typeof weight + " - valor: " + weight, 
-        goal: typeof goal + " - valor: " + goal, 
-        activityLevel: typeof activityLevel + " - valor: " + activityLevel, 
-        experience: typeof experience + " - valor: " + experience
-      });
-
-      // Validaciones adicionales
-      if (!name || !email || !password || height === undefined || weight === undefined || !goal || !activityLevel || !experience) {
-        console.log("Error de validación: Campos faltantes o inválidos", { 
-          name: !!name, 
-          email: !!email, 
-          password: !!password, 
-          height: height !== undefined && height !== null, 
-          weight: weight !== undefined && weight !== null, 
-          goal: !!goal, 
-          activityLevel: !!activityLevel, 
-          experience: !!experience 
-        });
-        return res.status(400).json({
-          success: false,
-          message: "Todos los campos son obligatorios y deben tener valores válidos",
-          details: {
-            name: !!name ? "válido" : "faltante",
-            email: !!email ? "válido" : "faltante",
-            password: !!password ? "válido" : "faltante",
-            height: height !== undefined && height !== null ? "válido" : "faltante o inválido",
-            weight: weight !== undefined && weight !== null ? "válido" : "faltante o inválido",
-            goal: !!goal ? "válido" : "faltante",
-            activityLevel: !!activityLevel ? "válido" : "faltante",
-            experience: !!experience ? "válido" : "faltante"
-          }
-        })
-      }
 
       // Check if user already exists
       const existingUser = await User.findOne({ email })
       if (existingUser) {
-        console.log("Error: Email ya existe", { email });
         return res.status(400).json({
           success: false,
           message: "User with this email already exists",
@@ -72,30 +29,7 @@ const authController = {
         experience,
       })
 
-      try {
-        await user.save()
-      } catch (saveError) {
-        console.error("Error al guardar usuario:", JSON.stringify(saveError, null, 2));
-        
-        // Extraer información detallada de los errores de validación
-        let errorDetails = {};
-        if (saveError.errors) {
-          Object.keys(saveError.errors).forEach(field => {
-            errorDetails[field] = {
-              message: saveError.errors[field].message,
-              value: saveError.errors[field].value,
-              kind: saveError.errors[field].kind
-            };
-          });
-        }
-        
-        return res.status(400).json({
-          success: false,
-          message: "Error en la validación de datos. Revisa los detalles para más información.",
-          error: saveError.message || "Error de validación",
-          details: errorDetails
-        });
-      }
+      await user.save()
 
       // Generate token
       const token = generateToken(user._id)

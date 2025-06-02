@@ -33,11 +33,21 @@ app.use("/api/", limiter)
 
 app.use(
   cors({
-    origin: [
-      'https://my-fit-journey.vercel.app',
-      'https://my-fit-journey-83c7i72qr-pablorocheras-projects.vercel.app',
-      process.env.FRONTEND_URL
-    ].filter(Boolean),
+    origin: function(origin, callback) {
+      // Permitir solicitudes sin origen (como aplicaciones móviles o curl)
+      if (!origin) return callback(null, true);
+      
+      // Permitir cualquier dominio de Vercel
+      if (
+        origin.includes('.vercel.app') || 
+        origin.includes('my-fit-journey.vercel.app') ||
+        origin === process.env.FRONTEND_URL
+      ) {
+        return callback(null, true);
+      }
+      
+      callback(new Error('No permitido por CORS'));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     optionsSuccessStatus: 204
