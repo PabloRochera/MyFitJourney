@@ -26,14 +26,10 @@ const userSchema = new mongoose.Schema(
     height: {
       type: Number,
       required: [true, "Height is required"],
-      min: [30, "Height must be at least 30cm"],
-      max: [300, "Height cannot exceed 300cm"],
     },
     weight: {
       type: Number,
       required: [true, "Weight is required"],
-      min: [20, "Weight must be at least 20kg"],
-      max: [500, "Weight cannot exceed 500kg"],
     },
     goal: {
       type: String,
