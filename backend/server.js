@@ -45,6 +45,8 @@ if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"))
 }
 
+app.set('trust proxy', 1)
+
 // MongoDB
 console.log("🔄 Connecting to MongoDB...")
 mongoose
