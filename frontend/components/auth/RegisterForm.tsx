@@ -22,9 +22,9 @@ export default function RegisterForm() {
     confirmPassword: "",
     height: "",
     weight: "",
-    goal: "",
-    activityLevel: "",
-    experience: "",
+    goal: "improve-fitness", // Valor predeterminado
+    activityLevel: "moderate", // Valor predeterminado
+    experience: "beginner", // Valor predeterminado
   })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -35,18 +35,52 @@ export default function RegisterForm() {
     setLoading(true)
     setError("")
 
+    // Validar que todos los campos requeridos estén completos
+    const requiredFields = ["name", "email", "password", "height", "weight", "goal", "activityLevel", "experience"]
+    for (const field of requiredFields) {
+      if (!formData[field as keyof typeof formData]) {
+        setError(`El campo ${field} es obligatorio`)
+        setLoading(false)
+        return
+      }
+    }
+
+    // Validar contraseña
     if (formData.password !== formData.confirmPassword) {
       setError("Las contraseñas no coinciden")
       setLoading(false)
       return
     }
 
+    if (formData.password.length < 6) {
+      setError("La contraseña debe tener al menos 6 caracteres")
+      setLoading(false)
+      return
+    }
+
+    // Validar altura y peso
+    const height = Number(formData.height)
+    const weight = Number(formData.weight)
+    
+    if (isNaN(height) || height < 100 || height > 250) {
+      setError("La altura debe ser un número entre 100 y 250 cm")
+      setLoading(false)
+      return
+    }
+
+    if (isNaN(weight) || weight < 30 || weight > 300) {
+      setError("El peso debe ser un número entre 30 y 300 kg")
+      setLoading(false)
+      return
+    }
+
     try {
       const { confirmPassword, ...userData } = formData
+      console.log("Enviando datos de registro:", userData)
       await register({
         ...userData,
-        height: Number.parseInt(userData.height),
-        weight: Number.parseInt(userData.weight),
+        height: Number(userData.height),
+        weight: Number(userData.weight),
       })
     } catch (error: any) {
       setError(error.message || "Error al crear la cuenta")
@@ -144,7 +178,7 @@ export default function RegisterForm() {
 
           <div className="space-y-2">
             <Label>Objetivo</Label>
-            <Select onValueChange={(value) => handleSelectChange("goal", value)} required>
+            <Select onValueChange={(value) => handleSelectChange("goal", value)} defaultValue={formData.goal} required>
               <SelectTrigger>
                 <SelectValue placeholder="Selecciona tu objetivo" />
               </SelectTrigger>
@@ -159,7 +193,7 @@ export default function RegisterForm() {
 
           <div className="space-y-2">
             <Label>Nivel de actividad</Label>
-            <Select onValueChange={(value) => handleSelectChange("activityLevel", value)} required>
+            <Select onValueChange={(value) => handleSelectChange("activityLevel", value)} defaultValue={formData.activityLevel} required>
               <SelectTrigger>
                 <SelectValue placeholder="Selecciona tu nivel" />
               </SelectTrigger>
@@ -175,7 +209,7 @@ export default function RegisterForm() {
 
           <div className="space-y-2">
             <Label>Experiencia</Label>
-            <Select onValueChange={(value) => handleSelectChange("experience", value)} required>
+            <Select onValueChange={(value) => handleSelectChange("experience", value)} defaultValue={formData.experience} required>
               <SelectTrigger>
                 <SelectValue placeholder="Selecciona tu experiencia" />
               </SelectTrigger>

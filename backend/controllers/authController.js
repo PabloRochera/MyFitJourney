@@ -7,10 +7,40 @@ const authController = {
   register: async (req, res) => {
     try {
       const { name, email, password, height, weight, goal, activityLevel, experience } = req.body
+      
+      console.log("Datos de registro recibidos:", { 
+        name, 
+        email, 
+        passwordLength: password?.length, 
+        height, 
+        weight, 
+        goal, 
+        activityLevel, 
+        experience 
+      });
+
+      // Validaciones adicionales
+      if (!name || !email || !password || !height || !weight || !goal || !activityLevel || !experience) {
+        console.log("Error de validación: Campos faltantes", { 
+          name: !!name, 
+          email: !!email, 
+          password: !!password, 
+          height: !!height, 
+          weight: !!weight, 
+          goal: !!goal, 
+          activityLevel: !!activityLevel, 
+          experience: !!experience 
+        });
+        return res.status(400).json({
+          success: false,
+          message: "Todos los campos son obligatorios",
+        })
+      }
 
       // Check if user already exists
       const existingUser = await User.findOne({ email })
       if (existingUser) {
+        console.log("Error: Email ya existe", { email });
         return res.status(400).json({
           success: false,
           message: "User with this email already exists",
@@ -29,7 +59,19 @@ const authController = {
         experience,
       })
 
-      await user.save()
+      try {
+        await user.save()
+      } catch (saveError) {
+        console.error("Error al guardar usuario:", saveError);
+        return res.status(400).json({
+          success: false,
+          message: saveError.message || "Error en la validación de datos",
+          details: saveError.errors ? Object.keys(saveError.errors).map(key => ({
+            field: key,
+            message: saveError.errors[key].message
+          })) : []
+        });
+      }
 
       // Generate token
       const token = generateToken(user._id)
