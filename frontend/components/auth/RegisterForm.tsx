@@ -178,7 +178,7 @@ export default function RegisterForm() {
 
           <div className="space-y-2">
             <Label>Objetivo</Label>
-            <Select onValueChange={(value) => handleSelectChange("goal", value)} defaultValue={formData.goal} required>
+            <Select onValueChange={(value) => handleSelectChange("goal", value)} required>
               <SelectTrigger>
                 <SelectValue placeholder="Selecciona tu objetivo" />
               </SelectTrigger>
@@ -193,7 +193,7 @@ export default function RegisterForm() {
 
           <div className="space-y-2">
             <Label>Nivel de actividad</Label>
-            <Select onValueChange={(value) => handleSelectChange("activityLevel", value)} defaultValue={formData.activityLevel} required>
+            <Select onValueChange={(value) => handleSelectChange("activityLevel", value)} required>
               <SelectTrigger>
                 <SelectValue placeholder="Selecciona tu nivel" />
               </SelectTrigger>
@@ -209,7 +209,7 @@ export default function RegisterForm() {
 
           <div className="space-y-2">
             <Label>Experiencia</Label>
-            <Select onValueChange={(value) => handleSelectChange("experience", value)} defaultValue={formData.experience} required>
+            <Select onValueChange={(value) => handleSelectChange("experience", value)} required>
               <SelectTrigger>
                 <SelectValue placeholder="Selecciona tu experiencia" />
               </SelectTrigger>
