@@ -1,30 +1,21 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useAuth } from "../../context/AuthContext"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Alert, AlertDescription } from "../ui/alert"
 import { Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 
-export default function RegisterForm() {
-  const { register } = useAuth()
+export default function LoginForm() {
+  const { login } = useAuth()
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
-    confirmPassword: "",
-    height: "",
-    weight: "",
-    goal: "improve-fitness", // Valor predeterminado
-    activityLevel: "moderate", // Valor predeterminado
-    experience: "beginner", // Valor predeterminado
   })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -35,55 +26,10 @@ export default function RegisterForm() {
     setLoading(true)
     setError("")
 
-    // Validar que todos los campos requeridos estén completos
-    const requiredFields = ["name", "email", "password", "height", "weight", "goal", "activityLevel", "experience"]
-    for (const field of requiredFields) {
-      if (!formData[field as keyof typeof formData]) {
-        setError(`El campo ${field} es obligatorio`)
-        setLoading(false)
-        return
-      }
-    }
-
-    // Validar contraseña
-    if (formData.password !== formData.confirmPassword) {
-      setError("Las contraseñas no coinciden")
-      setLoading(false)
-      return
-    }
-
-    if (formData.password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres")
-      setLoading(false)
-      return
-    }
-
-    // Validar altura y peso
-    const height = Number(formData.height)
-    const weight = Number(formData.weight)
-    
-    if (isNaN(height) || height < 100 || height > 250) {
-      setError("La altura debe ser un número entre 100 y 250 cm")
-      setLoading(false)
-      return
-    }
-
-    if (isNaN(weight) || weight < 30 || weight > 300) {
-      setError("El peso debe ser un número entre 30 y 300 kg")
-      setLoading(false)
-      return
-    }
-
     try {
-      const { confirmPassword, ...userData } = formData
-      console.log("Enviando datos de registro:", userData)
-      await register({
-        ...userData,
-        height: Number(userData.height),
-        weight: Number(userData.weight),
-      })
+      await login(formData.email, formData.password)
     } catch (error: any) {
-      setError(error.message || "Error al crear la cuenta")
+      setError(error.message || "Error al iniciar sesión")
     } finally {
       setLoading(false)
     }
@@ -96,24 +42,17 @@ export default function RegisterForm() {
     }))
   }
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
-
   return (
     <Card className="w-full max-w-xl mx-auto p-8 md:p-10 shadow-xl rounded-2xl bg-white/95">
       <CardHeader className="space-y-1">
         <div className="mb-4 text-center">
-          <span className="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold mb-2">¡Crea tu cuenta gratis!</span>
+          <span className="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold mb-2">¡Bienvenido de nuevo!</span>
         </div>
         <CardTitle className="text-2xl text-center font-bold text-blue-800 flex items-center justify-center gap-2">
           <svg xmlns='http://www.w3.org/2000/svg' className='h-8 w-8 text-blue-600' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M2 15.5V18a2 2 0 002 2h2.5M22 8.5V6a2 2 0 00-2-2h-2.5M6.5 20H17.5M6.5 4H17.5M4 6.5V17.5M20 6.5V17.5M7 9v6M17 9v6' /></svg>
-          Crear Cuenta
+          Iniciar Sesión
         </CardTitle>
-        <CardDescription className="text-center text-gray-500">Completa tus datos para personalizar tu experiencia</CardDescription>
+        <CardDescription className="text-center text-gray-500">Ingresa tus credenciales para acceder a tu cuenta</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -122,19 +61,6 @@ export default function RegisterForm() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-
-          <div className="space-y-2">
-            <Label htmlFor="name">Nombre completo</Label>
-            <Input
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Tu nombre"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">Correo electrónico</Label>
@@ -147,78 +73,6 @@ export default function RegisterForm() {
               onChange={handleChange}
               required
             />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="height">Altura (cm)</Label>
-              <Input
-                id="height"
-                name="height"
-                type="number"
-                placeholder="170"
-                value={formData.height}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="weight">Peso (kg)</Label>
-              <Input
-                id="weight"
-                name="weight"
-                type="number"
-                placeholder="70"
-                value={formData.weight}
-                onChange={handleChange}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Objetivo</Label>
-            <Select onValueChange={(value) => handleSelectChange("goal", value)} required>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecciona tu objetivo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="lose-weight">Perder peso</SelectItem>
-                <SelectItem value="gain-muscle">Ganar músculo</SelectItem>
-                <SelectItem value="improve-fitness">Mejorar condición física</SelectItem>
-                <SelectItem value="maintain">Mantener peso</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Nivel de actividad</Label>
-            <Select onValueChange={(value) => handleSelectChange("activityLevel", value)} required>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecciona tu nivel" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sedentary">Sedentario</SelectItem>
-                <SelectItem value="light">Ligero</SelectItem>
-                <SelectItem value="moderate">Moderado</SelectItem>
-                <SelectItem value="active">Activo</SelectItem>
-                <SelectItem value="very-active">Muy activo</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Experiencia</Label>
-            <Select onValueChange={(value) => handleSelectChange("experience", value)} required>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecciona tu experiencia" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="beginner">Principiante</SelectItem>
-                <SelectItem value="intermediate">Intermedio</SelectItem>
-                <SelectItem value="advanced">Avanzado</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
 
           <div className="space-y-2">
@@ -237,7 +91,7 @@ export default function RegisterForm() {
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-blue-700"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-blue-600"
                 onClick={() => setShowPassword(!showPassword)}
                 tabIndex={-1}
                 aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
@@ -247,27 +101,14 @@ export default function RegisterForm() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
-            <Input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              placeholder="••••••••"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
           <Button type="submit" className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-2 rounded-xl transition" disabled={loading}>
-            {loading ? "Creando cuenta..." : "Crear Cuenta"}
+            {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
           </Button>
 
           <div className="text-center text-sm mt-4">
-            <span className="text-gray-600">¿Ya tienes cuenta? </span>
-            <Link href="/" className="text-blue-700 hover:underline font-semibold">
-              Inicia sesión aquí
+            <span className="text-gray-600">¿No tienes cuenta? </span>
+            <Link href="/register" className="text-blue-700 hover:underline font-semibold">
+              Regístrate aquí
             </Link>
           </div>
         </form>
