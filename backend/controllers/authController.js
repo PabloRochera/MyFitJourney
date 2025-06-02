@@ -7,6 +7,13 @@ const authController = {
   register: async (req, res) => {
     try {
       const { name, email, password, height, weight, goal, activityLevel, experience } = req.body
+      
+      console.log("Datos recibidos para registro:", {
+        name, email, 
+        height: typeof height + " - " + height,
+        weight: typeof weight + " - " + weight,
+        goal, activityLevel, experience
+      });
 
       // Check if user already exists
       const existingUser = await User.findOne({ email })
@@ -17,7 +24,7 @@ const authController = {
         })
       }
 
-      // Create new user
+      // Create new user with conversión explícita
       const user = new User({
         name,
         email,
@@ -29,7 +36,30 @@ const authController = {
         experience,
       })
 
-      await user.save()
+      try {
+        await user.save()
+      } catch (saveError) {
+        console.error("Error detallado al guardar usuario:", JSON.stringify(saveError, null, 2));
+        
+        // Extraer información detallada de los errores de validación
+        let errorDetails = {};
+        if (saveError.errors) {
+          Object.keys(saveError.errors).forEach(field => {
+            errorDetails[field] = {
+              message: saveError.errors[field].message,
+              value: saveError.errors[field].value,
+              kind: saveError.errors[field].kind
+            };
+          });
+        }
+        
+        return res.status(400).json({
+          success: false,
+          message: "Error en la validación de datos. Revisa los detalles para más información.",
+          error: saveError.message || "Error de validación",
+          details: errorDetails
+        });
+      }
 
       // Generate token
       const token = generateToken(user._id)
