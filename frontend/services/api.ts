@@ -41,10 +41,17 @@ export const login = async (email: string, password: string) => {
 }
 
 export const register = async (userData: any) => {
-  return apiRequest("/auth/register", {
-    method: "POST",
-    body: JSON.stringify(userData),
-  })
+  console.log("Datos enviados al registro (api.ts):", userData);
+  console.log("JSON enviado:", JSON.stringify(userData));
+  try {
+    return await apiRequest("/auth/register", {
+      method: "POST",
+      body: JSON.stringify(userData),
+    });
+  } catch (error) {
+    console.error("Error en registro (api.ts):", error);
+    throw error;
+  }
 }
 
 export const getProfile = async () => {

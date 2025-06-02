@@ -62,14 +62,14 @@ export default function RegisterForm() {
     const height = Number(formData.height)
     const weight = Number(formData.weight)
     
-    if (isNaN(height) || height < 100 || height > 250) {
-      setError("La altura debe ser un número entre 100 y 250 cm")
+    if (isNaN(height) || height < 30 || height > 300) {
+      setError("La altura debe ser un número entre 30 y 300 cm")
       setLoading(false)
       return
     }
 
-    if (isNaN(weight) || weight < 30 || weight > 300) {
-      setError("El peso debe ser un número entre 30 y 300 kg")
+    if (isNaN(weight) || weight < 20 || weight > 500) {
+      setError("El peso debe ser un número entre 20 y 500 kg")
       setLoading(false)
       return
     }
